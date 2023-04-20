@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Launch Server",
+        "type": "node",
+        "request": "launch",
+        "runtimeExecutable": "nodemon",
+        "cwd": "${workspaceFolder}/API",
+        "program": "${workspaceFolder}/API/server.js",
+        "restart": true,
+        "console": "integratedTerminal"
+      }
+    ]
+  }
+  
