@@ -3,65 +3,41 @@
 <head>
   <title>Stickies Application</title>
   <script src="/javascripts/alpine.js"></script>
+  <script src="/javascripts/app.js"></script>
   <link href="/stylesheets/style.css" rel="stylesheet" />
-  <script>
-    let stickers = [];
-    let payload = {
-      stickers: Alpine.reactive(stickers),
-      addSticker() {
-        let sticker = {
-          title: '',
-          content: '',
-          dragging: false,
-          focus: false
-        }
-        this.stickers.push(sticker)
-      },
-      removeSticker(targetSticker) {
-        this.stickers = this.stickers.filter(sticker => sticker !== targetSticker);
-      },
-      swap () {
-        const source = document.querySelector('.dragging');
-        
-        if (source === null)
-          return;
-
-        const sourceIndex = source.children[0].children[0].lastChild.textContent;
-
-        const target = event.target.closest('.note');
-        console.log(target.classList)
-        const targetIndex = target.children[0].children[0].lastChild.textContent;
-
-        let temp = payload.stickers[sourceIndex];
-        payload.stickers[sourceIndex] = payload.stickers[targetIndex];
-        payload.stickers[targetIndex] = temp;
-      }
-    };
-    
-    function getPayload() {
-      return payload
-    }
-
-    function undrag() {
-      document
-        .querySelectorAll('.dragging')
-        .forEach(it => it.classList.remove('dragging'));
-    }
-  </script>
 </head>
-{{!-- TODO Focus --}}
-{{!-- TODO Create and remove hot keys --}}
 <body>
-  <div x-data="getPayload()" @mouseup.document="undrag()" @keyup.space.window="addSticker()" class="board">
-      <template x-for="(sticker, index) in stickers" :key="index">
-        <div class='note' :class="{'dragging': sticker.dragging, 'focus': sticker.focus}" draggable="true" @dragstart="sticker.dragging = true" @mouseup.document="sticker.dragging = false" @dragover.prevent="" @drop="swap()">
+  <div 
+      x-data="$store.app.stickers = $store.app.loadStickers()"
+      @click.self="$store.app.unfocus();"
+      @keyup.space.window="$store.app.addSticker()" 
+      @keyup.delete.window="$store.app.removeSticker()"
+      class="board"
+    >
+      <template x-for="(sticker, index) in $store.app.stickers" :key="index">
+        <div 
+            class='note' 
+            :class="{'dragging': sticker.dragging, 'focus': sticker.focus}" 
+            draggable="true" 
+            @dragstart="sticker.dragging = true; $store.app.unfocus();" 
+            @dragend="sticker.dragging = false" 
+            @drop.throttle="sticker.dragging = false;" 
+            @mouseup.document="sticker.dragging = false" 
+            @dragover.prevent=""
+            @click="$store.app.unfocus(); sticker.focus = true"
+            @drop="$store.app.swap()"
+          >
           <div class="text">
             <span class="note-index" x-text="index"></span>
-            <textarea x-model="sticker.content" class="cnt" placeholder="Enter note description here"></textarea>
+            <textarea 
+                x-model="sticker.content" 
+                class="cnt" 
+                placeholder="Enter note description here"
+                @blur="$store.app.unfocus(); $store.app.saveStickers()"
+              ></textarea>
           </div>
         </div>
       </template>
   </div>
-</ul>
 </body>
 </html>
