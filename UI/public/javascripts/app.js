@@ -17,6 +17,11 @@ Alpine
         this.stickers = this.stickers.filter(it => it.focus === false);
         this.saveStickers();
       },
+      drag(sticker) {
+        sticker.dragging = true; 
+        sticker.focus = true;
+        this.unfocus(); 
+      },
       swap() {
         let source = document.querySelector('.dragging');
 
@@ -34,6 +39,11 @@ Alpine
         this.saveStickers();
       },
       unfocus() {
+        const target = event.target
+
+        if (target.classList.contains('focus'))
+          return;
+
         this
           .stickers
           .filter(it => it.focus)
@@ -60,6 +70,9 @@ Alpine
         }
 
         return JSON.parse(content);
+      },
+      shiftFocusLeft() {
+
       }
     }
   )
@@ -72,3 +85,10 @@ function undrag() {
     .filter(it => it >= 0)
     .forEach(it => sticker[it].dragging = false);
 }
+
+
+// pressing tab key on last stickie adds a new stickie at the end
+// pressing shift+tab on the first stickie adds a new stickie at the beginning
+// pressing option / alt key will change colour of stickie currently in focus
+// deleting all text from a stickie + pressing a delete key will result in current stickie deletion
+// A curser must be place in appropriate focus regardless of operation. there should be no need for a mouse click.

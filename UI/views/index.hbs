@@ -10,6 +10,9 @@
   <div 
       x-data="$store.app.stickers = $store.app.loadStickers()"
       @click.self="$store.app.unfocus();"
+      @click.document="$store.app.unfocus();"
+      @mouseup.document="undrag()" 
+      @dragend.document="undrag()" 
       @keyup.space.window="$store.app.addSticker()" 
       @keyup.delete.window="$store.app.removeSticker()"
       class="board"
@@ -19,7 +22,7 @@
             class='note' 
             :class="{'dragging': sticker.dragging, 'focus': sticker.focus}" 
             draggable="true" 
-            @dragstart="sticker.dragging = true; $store.app.unfocus();" 
+            @dragstart="$store.app.drag(sticker)" 
             @dragend="sticker.dragging = false" 
             @drop.throttle="sticker.dragging = false;" 
             @mouseup.document="sticker.dragging = false" 
