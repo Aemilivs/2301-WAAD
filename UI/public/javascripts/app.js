@@ -3,21 +3,16 @@ Alpine
     'app',
     {
       stickers: Alpine.reactive([]),
-      focusedNote: 0,
       getNotesAmountInRow() {
         let board = document.querySelector('.board');
         let boardWidth = board.clientWidth;
-
         let children = board.children;
-
         // The number 2 is put because first elemnt is always template element.
         if (children.length < 2)
           return 0;
-
         let noteWidth = board.children[1].clientWidth;
         return Math.floor(boardWidth/noteWidth); 
       },
-      // TODO Fix the issue with accessibility focus.
       addSticker() {
         const sticker = {
           title: '',
@@ -35,12 +30,18 @@ Alpine
           return;
         }
 
-        if (this.focusedNote === 0 && event.shiftKey)
+        let notes = document.activeElement.parentElement.children
+        let currentIndex = Array.from(notes).indexOf(document.activeElement) - 1;
+        
+        if (currentIndex === 0 && event.shiftKey)
           this.stickers.unshift(sticker)
 
-        if (this.stickers.length - 1 !== this.focusedNote)
+        if (this.stickers.length - 1 !== currentIndex)
           return;
-        
+
+        if (event.shiftKey)
+          return;
+
         this.stickers.push(sticker)
         this.focusedNote += 1;
         this.saveStickers();
@@ -49,37 +50,24 @@ Alpine
         this.stickers = this.stickers.filter(it => it.focus === false && it.content != '');
         this.saveStickers();
       },
-      drag(sticker) {
-        sticker.dragging = true; 
-        sticker.focus = true;
-        this.unfocus(); 
+      focusElement() {
+        event.target.focus();
       },
       swap() {
-        let source = document.querySelector('.dragging');
+        let source = document.activeElement;
 
-        if (source === null)
-          return;
-
-        let sourceIndex = source.parentNode.children[0].textContent;
+        let notes = source.parentElement.children;
+        // Accounting for template element.
+        let sourceIndex = Array.from(notes).indexOf(source) - 1;
 
         let target = event.target.closest('.note');
-        let targetIndex = target.parentNode.children[0].textContent;
+        let targetIndex = Array.from(notes).indexOf(target) - 1;
 
         let temp = this.stickers[sourceIndex];
         this.stickers[sourceIndex] = this.stickers[targetIndex];
         this.stickers[targetIndex] = temp;
+        target.focus();
         this.saveStickers();
-      },
-      unfocus() {
-        const target = event.target
-
-        if (target.classList.contains('focus'))
-          return;
-
-        this
-          .stickers
-          .filter(it => it.focus)
-          .forEach(it => it.focus = false);
       },
       saveStickers() {
         const content =
@@ -103,31 +91,33 @@ Alpine
 
         return JSON.parse(content);
       },
-      shiftFocusUp() {
-        let shift = this.getNotesAmountInRow();
-        this.shiftFocus(-shift);
-      },
-      shiftFocusRight() {
-        this.shiftFocus(1);
-      },
-      shiftFocusDown() {
-        let shift = this.getNotesAmountInRow();
-        this.shiftFocus(shift);
-      },
-      shiftFocusLeft() {
-        this.shiftFocus(-1);
-      },
-      shiftFocus(shift) {
-        let currentValue = this.focusedNote;
+      shiftFocusOneRowBelow() {
+        let notes = document.activeElement.parentElement.children;
+        let amount = this.getNotesAmountInRow();
 
-        if (currentValue + shift < 0)
-          return;
-        
-        let currentLimit = this.stickers.length - 1;
-        if (currentValue + shift > currentLimit)
+        if (notes.length <= amount)
           return;
 
-        this.focusedNote += shift;
+        let currentIndex = Array.from(notes).indexOf(document.activeElement)
+
+        if (currentIndex + amount > notes.length)
+          return;
+
+        notes[currentIndex + amount].focus();
+      },
+      shiftFocusOneRowAbove() {
+        let notes = document.activeElement.parentElement.children;
+        let amount = this.getNotesAmountInRow();
+
+        if (notes.length <= amount)
+          return;
+
+        let currentIndex = Array.from(notes).indexOf(document.activeElement)
+
+        if (currentIndex - amount < 0)
+          return;
+
+        notes[currentIndex - amount].focus();
       },
       shiftColor(sticker) {
         let index = sticker.colorIndex;
@@ -142,12 +132,8 @@ Alpine
         'orange',
         'blue',
         'green'
-      ],
-      undrag() {
-
-      }
+      ]
     }
   )
 
-// pressing option / alt key will change colour of stickie currently in focus
 // A curser must be place in appropriate focus regardless of operation. there should be no need for a mouse click.
