@@ -3,18 +3,50 @@ Alpine
     'app',
     {
       stickers: Alpine.reactive([]),
+      focusedNote: 0,
+      getNotesAmountInRow() {
+        let board = document.querySelector('.board');
+        let boardWidth = board.clientWidth;
+
+        let children = board.children;
+
+        // The number 2 is put because first elemnt is always template element.
+        if (children.length < 2)
+          return 0;
+
+        let noteWidth = board.children[1].clientWidth;
+        return Math.floor(boardWidth/noteWidth); 
+      },
+      // TODO Fix the issue with accessibility focus.
       addSticker() {
-        let sticker = {
+        const sticker = {
           title: '',
           content: '',
+          colorIndex: 0,
           dragging: false,
           focus: false
+        };
+
+        if (this.stickers.length === 0)
+        {
+          sticker.focus = true;
+          this.stickers.push(sticker);
+          this.saveStickers();
+          return;
         }
+
+        if (this.focusedNote === 0 && event.shiftKey)
+          this.stickers.unshift(sticker)
+
+        if (this.stickers.length - 1 !== this.focusedNote)
+          return;
+        
         this.stickers.push(sticker)
+        this.focusedNote += 1;
         this.saveStickers();
       },
       removeSticker() {
-        this.stickers = this.stickers.filter(it => it.focus === false);
+        this.stickers = this.stickers.filter(it => it.focus === false && it.content != '');
         this.saveStickers();
       },
       drag(sticker) {
@@ -28,10 +60,10 @@ Alpine
         if (source === null)
           return;
 
-        let sourceIndex = source.children[0].children[0].lastChild.textContent;
+        let sourceIndex = source.parentNode.children[0].textContent;
 
         let target = event.target.closest('.note');
-        let targetIndex = target.children[0].children[0].lastChild.textContent;
+        let targetIndex = target.parentNode.children[0].textContent;
 
         let temp = this.stickers[sourceIndex];
         this.stickers[sourceIndex] = this.stickers[targetIndex];
@@ -71,24 +103,51 @@ Alpine
 
         return JSON.parse(content);
       },
+      shiftFocusUp() {
+        let shift = this.getNotesAmountInRow();
+        this.shiftFocus(-shift);
+      },
+      shiftFocusRight() {
+        this.shiftFocus(1);
+      },
+      shiftFocusDown() {
+        let shift = this.getNotesAmountInRow();
+        this.shiftFocus(shift);
+      },
       shiftFocusLeft() {
+        this.shiftFocus(-1);
+      },
+      shiftFocus(shift) {
+        let currentValue = this.focusedNote;
+
+        if (currentValue + shift < 0)
+          return;
+        
+        let currentLimit = this.stickers.length - 1;
+        if (currentValue + shift > currentLimit)
+          return;
+
+        this.focusedNote += shift;
+      },
+      shiftColor(sticker) {
+        let index = sticker.colorIndex;
+
+        sticker.colorIndex += 1;
+
+        if (index >= this.colorMap.length - 1)
+          sticker.colorIndex = 0;
+      },
+      colorMap: [
+        'red',
+        'orange',
+        'blue',
+        'green'
+      ],
+      undrag() {
 
       }
     }
   )
 
-function undrag() {
-  const notes = document.querySelectorAll('.note');
-  Array
-    .from(notes)
-    .map((it, index) => it.classList.contains('dragging') ? index : -1)
-    .filter(it => it >= 0)
-    .forEach(it => sticker[it].dragging = false);
-}
-
-
-// pressing tab key on last stickie adds a new stickie at the end
-// pressing shift+tab on the first stickie adds a new stickie at the beginning
 // pressing option / alt key will change colour of stickie currently in focus
-// deleting all text from a stickie + pressing a delete key will result in current stickie deletion
 // A curser must be place in appropriate focus regardless of operation. there should be no need for a mouse click.

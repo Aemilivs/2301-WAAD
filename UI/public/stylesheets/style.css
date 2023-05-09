@@ -44,28 +44,32 @@ a.button {
 }
 
 /* BOARD */
-#board {
+.board {
+  display: flex;
+  flex-wrap: wrap;
   padding: 100px 30px 30px;
   margin-top: 40px;
   overflow-y: visible;
-  @extend .noflick;
 }
 
 /* NOTE */
+.text {
+  display: contents;
+}
+
 .text p {
   font-family: Comic Sans, helvetica, arial, sans-serif;
 }
 
 .note {
   float: left;
-  display: block;
+  display: inline-flex;
   position: relative;
   padding: 1em;
   width: 300px;
   min-height: 300px;
   margin: 0 30px 30px 0;
   background: linear-gradient(top, rgba(0, 0, 0, .05), rgba(0, 0, 0, .25));
-  background-color: #FFFD75;
   box-shadow: 5px 5px 10px -2px rgba(33, 33, 33, .3);
   transform: rotate(2deg);
   transform: skew(-1deg, 1deg);
@@ -74,8 +78,24 @@ a.button {
 
 }
 
-.note:hover {
+.note:focus {
   cursor: move;
+}
+
+.note.red {
+  background-color: #E75448;
+}
+
+.note.orange {
+  background-color: #dbac3e;
+}
+
+.note.blue {
+  background-color: #3083d1;
+}
+
+.note.green {
+  background-color: #349b4e;
 }
 
 textarea {
@@ -111,5 +131,5 @@ textarea:focus {
 }
 
 .focus {
-  background-color: #E75448;
+  box-shadow: 0 0 10px 5px rgba(0, 0, 0, .2) inset;
 }

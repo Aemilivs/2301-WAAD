@@ -10,33 +10,36 @@
   <div 
       x-data="$store.app.stickers = $store.app.loadStickers()"
       @click.self="$store.app.unfocus();"
+      @resize.window="console.log($store.app.getNotesAmountInRow())"
       @click.document="$store.app.unfocus();"
-      @mouseup.document="undrag()" 
-      @dragend.document="undrag()" 
-      @keyup.space.window="$store.app.addSticker()" 
+      @mouseup.document="$store.app.undrag()" 
+      @dragend.document="$store.app.undrag()" 
+      @keyup.tab.document="$store.app.addSticker();" 
       @keyup.delete.window="$store.app.removeSticker()"
+      @keyup.up.document="$store.app.shiftFocusUp()"
+      @keyup.right.document="$store.app.shiftFocusRight()"
+      @keyup.down.document="$store.app.shiftFocusDown()"
+      @keyup.left.document="$store.app.shiftFocusLeft()"
       class="board"
     >
       <template x-for="(sticker, index) in $store.app.stickers" :key="index">
-        <div 
-            class='note' 
-            :class="{'dragging': sticker.dragging, 'focus': sticker.focus}" 
-            draggable="true" 
-            @dragstart="$store.app.drag(sticker)" 
-            @dragend="sticker.dragging = false" 
-            @drop.throttle="sticker.dragging = false;" 
-            @mouseup.document="sticker.dragging = false" 
-            @dragover.prevent=""
-            @click="$store.app.unfocus(); sticker.focus = true"
-            @drop="$store.app.swap()"
-          >
           <div class="text">
             <span class="note-index" x-text="index"></span>
             <textarea 
                 x-model="sticker.content" 
-                class="cnt" 
-                placeholder="Enter note description here"
+                placeholder="Write on me!"
                 @blur="$store.app.unfocus(); $store.app.saveStickers()"
+                class='note' 
+                :class="`${$store.app.colorMap[sticker.colorIndex]} ${sticker.dragging ? 'dragging' : ''} ${$store.app.focusedNote === index ? 'focus' : ''}`" 
+                draggable="true" 
+                @dragstart="$store.app.drag(sticker)" 
+                @dragend="sticker.dragging = false" 
+                @drop.throttle="sticker.dragging = false;" 
+                @mouseup.document="sticker.dragging = false" 
+                @keyup.alt="$store.app.shiftColor(sticker)"
+                @dragover.prevent=""
+                @click="$store.app.focusedNote = index;"
+                @drop="$store.app.swap()"
               ></textarea>
           </div>
         </div>
