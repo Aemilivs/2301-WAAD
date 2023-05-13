@@ -7,11 +7,8 @@
   <link href="/stylesheets/style.css" rel="stylesheet" />
 </head>
 <body>
-  <div id="instruction">
-    <p>Click tab</p>
-  </div>
   <div 
-      x-data="$store.app.stickers = $store.app.loadStickers()"
+      x-data="$store.app.loadStickers()"
       @keydown.tab.document="$store.app.addSticker();" 
       @keyup.delete.window="$store.app.removeSticker()"
       @keyup.up.prevent="$store.app.shiftFocusOneRowAbove()"
@@ -24,12 +21,12 @@
         <textarea 
             x-model="sticker.content" 
             placeholder="Write on me!"
-            @blur="$store.app.saveStickers()"
             @mouseover="$store.app.focusElement()"
             class='note' 
             :class="`${$store.app.colorMap[sticker.colorIndex]}`" 
             draggable="true" 
             @keyup.alt="$store.app.shiftColor(sticker)"
+            @keyup.debounce.1500ms="$store.app.saveStickers()"
             @dragover.prevent=""
             @drop="$store.app.swap()"
         ></textarea>

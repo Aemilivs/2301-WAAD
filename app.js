@@ -5,12 +5,11 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var boardRouter = require('./routes/stickieBoards');
+var boardsRouter = require('./routes/stickieBoards');
 const mongoose = require('mongoose');
 const hbs = require('hbs');
 
-mongoose.connect('mongodb://127.0.0.1:27017/mydb', { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect('mongodb://db:27017/mydb', { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB Connected...'))
   .catch(err => console.log(err));
 
@@ -27,8 +26,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/boards', boardRouter);
+app.use('/boards', boardsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

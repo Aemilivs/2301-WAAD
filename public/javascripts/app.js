@@ -44,7 +44,7 @@ Alpine
         this.saveStickers();
       },
       removeSticker() {
-        this.stickers = this.stickers.filter(it => it.focus === false && it.content != '');
+        this.stickers = this.stickers.filter(it =>it.content != '');
         this.saveStickers();
       },
       focusElement() {
@@ -66,27 +66,66 @@ Alpine
         target.focus();
         this.saveStickers();
       },
-      saveStickers() {
-        const content =
-          this
-            .stickers
-            .filter(it => it.content != "");
-        const raw = JSON.stringify(content);
-        localStorage.setItem('stickers', raw);
+      async saveStickers() {
+        const raw = {
+          id: this.id,
+          stickers: this.stickers.filter(it => it.content != '')
+        };
+        const payload = JSON.stringify(raw);
+        const response = 
+          await fetch(
+              '/boards/',
+              {
+                method: 'PUT',
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: payload,
+              }
+          );
       },
-      loadStickers() {
-        const content = localStorage.getItem('stickers');
+      async loadStickers() {
+        const url = document.URL;
 
-        if (content === null
-          || content === undefined
-          || content === "undefined"
-          || content === ""
-        ) {
-          localStorage.setItem('stickers', []);
-          return [];
+        if (url.includes('new'))
+          document.cookie = 'key=; Max-Age=-99999999;';  
+          
+        if (url.includes('delete')) {
+          const id = url.split('/').pop();
+          document.cookie = 'key=; Max-Age=-99999999;';
+          await fetch(
+            `/boards/delete/${id}`,
+            {
+              method: 'DELETE',
+            }
+          );
+          this.stickers = Alpine.reactive([])
         }
 
-        return JSON.parse(content);
+        let response = await fetch('/boards/');
+
+        if (response.status === 404)
+        {
+          const stickers = {
+            'stickers': []
+          };
+          const payload = JSON.stringify(stickers);
+          response = 
+            await fetch(
+                '/boards/',
+                {
+                  method: 'POST',
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: payload,
+                }
+            );
+        }
+
+        const payload = await response.json();
+        this.id = payload._id;
+        this.stickers = Alpine.reactive(payload.stickers);
       },
       shiftFocusOneRowBelow() {
         let notes = document.activeElement.parentElement.children;
@@ -116,13 +155,14 @@ Alpine
 
         notes[currentIndex - amount].focus();
       },
-      shiftColor(sticker) {
+      async shiftColor(sticker) {
         let index = sticker.colorIndex;
 
         sticker.colorIndex += 1;
 
         if (index >= this.colorMap.length - 1)
           sticker.colorIndex = 0;
+        await this.saveStickers();
       },
       colorMap: [
         'red',

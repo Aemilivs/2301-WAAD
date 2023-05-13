@@ -1,29 +1,3 @@
-/* body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-}
-
-a {
-  color: #00B7FF;
-}
-
-.stickers-container {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: flex-start;
-	align-content: flex-start;
-}
-
-.sticker {
-  flex: 1 0 auto;
-  display: inline-block;
-  padding: 10px;
-  max-width: 20%;
-  min-height: 50px;
-  margin: 10px;
-  background-color: #e6f72f;
-} */
-
 body {
   background-color: #EAF2E3;
 }
@@ -61,7 +35,7 @@ a.button {
 }
 
 .text p {
-  font-family: Comic Sans, helvetica, arial, sans-serif;
+  font-family: 'Courier New', Courier, monospace;
 }
 
 .note {
@@ -78,7 +52,25 @@ a.button {
   transform: skew(-1deg, 1deg);
   transition: transform .15s;
   z-index: 1;
+}
 
+.note:focus, 
+.note:focus-within {
+  transform: skew(0deg, 0deg);
+  animation: noteFocus 1s ease-in-out;
+  outline: none;
+}
+
+@keyframes noteFocus {
+  0% {
+    box-shadow: 5px 5px 10px -2px rgba(255, 233, 36, 0.3);
+  }
+  50% {
+    box-shadow: 0px 0px 20px 5px rgba(255, 233, 36, 0.3);
+  }
+  100% {
+    box-shadow: 5px 5px 10px -2px rgba(255, 233, 36, 0.3);
+  }
 }
 
 .note:focus {
