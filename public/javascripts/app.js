@@ -4,7 +4,7 @@ Alpine
     {
       stickers: Alpine.reactive([]),
       getNotesAmountInRow() {
-        let board = document.querySelector('.board');
+        let board = document.querySelector('#board');
         let boardWidth = board.clientWidth;
         let children = board.children;
         // The number 2 is put because first elemnt is always template element.
@@ -15,11 +15,8 @@ Alpine
       },
       addSticker() {
         const sticker = {
-          title: '',
           content: '',
-          colorIndex: 0,
-          dragging: false,
-          focus: false
+          colorIndex: 0
         };
 
         if (this.stickers.length === 0)
@@ -135,5 +132,3 @@ Alpine
       ]
     }
   )
-
-// A curser must be place in appropriate focus regardless of operation. there should be no need for a mouse click.

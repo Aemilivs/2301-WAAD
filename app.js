@@ -6,7 +6,13 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var boardRouter = require('./routes/stickieBoards');
+const mongoose = require('mongoose');
 const hbs = require('hbs');
+
+mongoose.connect('mongodb://127.0.0.1:27017/mydb', { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('MongoDB Connected...'))
+  .catch(err => console.log(err));
 
 var app = express();
 
@@ -22,6 +28,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/boards', boardRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -40,3 +47,6 @@ app.use(function(err, req, res, next) {
 });
 
 module.exports = app;
+
+
+

@@ -43,8 +43,12 @@ a.button {
   text-decoration: none;
 }
 
-/* BOARD */
-.board {
+#instruction {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+#board {
   display: flex;
   flex-wrap: wrap;
   padding: 100px 30px 30px;
@@ -52,7 +56,6 @@ a.button {
   overflow-y: visible;
 }
 
-/* NOTE */
 .text {
   display: contents;
 }

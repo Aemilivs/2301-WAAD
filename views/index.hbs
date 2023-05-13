@@ -7,6 +7,9 @@
   <link href="/stylesheets/style.css" rel="stylesheet" />
 </head>
 <body>
+  <div id="instruction">
+    <p>Click tab</p>
+  </div>
   <div 
       x-data="$store.app.stickers = $store.app.loadStickers()"
       @keydown.tab.document="$store.app.addSticker();" 
@@ -15,7 +18,7 @@
       @keyup.right.prevent="document.activeElement.nextElementSibling.focus()"
       @keyup.down.prevent="$store.app.shiftFocusOneRowBelow()"
       @keyup.left.prevent="document.activeElement.previousElementSibling.focus()"
-      class="board"
+      id="board"
     >
       <template x-for="(sticker, index) in $store.app.stickers" :key="index" >
         <textarea 

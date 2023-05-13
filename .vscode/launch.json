@@ -6,8 +6,8 @@
         "type": "node",
         "request": "launch",
         "runtimeExecutable": "nodemon",
-        "cwd": "${workspaceFolder}/API",
-        "program": "${workspaceFolder}/API/server.js",
+        "cwd": "${workspaceFolder}",
+        "program": "${workspaceFolder}/app.js",
         "restart": true,
         "console": "integratedTerminal"
       }
