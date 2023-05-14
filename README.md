@@ -6,12 +6,12 @@ This project is intended output for ICA-1 of subject 2301-WAAD of Prague City Un
 
 ## Design
 
-This application represents a stickie board where user can manage stickie notes. Front end is made with (https://alpinejs.dev/)[Alpine.js] and back end is made with (https://expressjs.com/)[express.js] and (https://www.mongodb.com/)[MongoDB].
+This application represents a stickie board where user can manage stickie notes. Front end is made with [Alpine.js](https://alpinejs.dev/) and back end is made with [express.js](https://expressjs.com/) and [MongoDB](https://www.mongodb.com/).
 
 ## Launching application
 
-Launch using [https://www.docker.com/](Docker):
+Launch using [Docker](https://www.docker.com/):
 
 ```
-docker compose up
+docker-compose up
 ```
