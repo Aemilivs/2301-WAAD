@@ -4,13 +4,13 @@ Alpine
     {
       stickers: Alpine.reactive([]),
       getNotesAmountInRow() {
-        let board = document.querySelector('#board');
-        let boardWidth = board.clientWidth;
-        let children = board.children;
+        const board = document.querySelector('#board');
+        const boardWidth = board.clientWidth;
+        const children = board.children;
         // The number 2 is put because first elemnt is always template element.
         if (children.length < 2)
           return 0;
-        let noteWidth = board.children[1].clientWidth;
+        const noteWidth = board.children[1].clientWidth;
         return Math.floor(boardWidth/noteWidth); 
       },
       addSticker() {
@@ -26,14 +26,13 @@ Alpine
 
         if (this.stickers.length === 0)
         {
-          sticker.focus = true;
           this.stickers.push(sticker);
           this.saveStickers();
           return;
         }
 
-        let notes = document.activeElement.parentElement.children
-        let currentIndex = Array.from(notes).indexOf(document.activeElement) - 1;
+        const notes = document.activeElement.parentElement.children
+        const currentIndex = Array.from(notes).indexOf(document.activeElement) - 1;
         
         if (currentIndex === 0 && event.shiftKey)
           this.stickers.unshift(sticker)
@@ -45,7 +44,6 @@ Alpine
           return;
 
         this.stickers.push(sticker)
-        this.focusedNote += 1;
         this.saveStickers();
       },
       removeSticker() {
@@ -67,16 +65,16 @@ Alpine
         event.target.focus();
       },
       swap() {
-        let source = document.activeElement;
+        const source = document.activeElement;
 
-        let notes = source.parentElement.children;
+        const notes = source.parentElement.children;
         // Accounting for template element.
-        let sourceIndex = Array.from(notes).indexOf(source) - 1;
+        const sourceIndex = Array.from(notes).indexOf(source) - 1;
 
-        let target = event.target.closest('.note');
-        let targetIndex = Array.from(notes).indexOf(target) - 1;
+        const target = event.target.closest('.note');
+        const targetIndex = Array.from(notes).indexOf(target) - 1;
 
-        let temp = this.stickers[sourceIndex];
+        const temp = this.stickers[sourceIndex];
         this.stickers[sourceIndex] = this.stickers[targetIndex];
         this.stickers[targetIndex] = temp;
         target.focus();
@@ -101,7 +99,7 @@ Alpine
           );
       },
       async loadStickers(id) {
-        let response = await fetch('/boards/' + id);
+        var response = await fetch('/boards/' + id);
 
         if (response.status === 404)
         {
@@ -152,20 +150,20 @@ Alpine
          }
       },
       handleUpload(event) {
-        let file = event.target.files[0];
+        const file = event.target.files[0];
         const reader = new FileReader();
         reader.onloadend = event => this.stickers = JSON.parse(event.target.result);
         
         reader.readAsText(file);
       },
       shiftFocusOneRowBelow() {
-        let notes = document.activeElement.parentElement.children;
-        let amount = this.getNotesAmountInRow();
+        const notes = document.activeElement.parentElement.children;
+        const amount = this.getNotesAmountInRow();
 
         if (notes.length <= amount)
           return;
 
-        let currentIndex = Array.from(notes).indexOf(document.activeElement)
+        const currentIndex = Array.from(notes).indexOf(document.activeElement)
 
         if (currentIndex + amount > notes.length)
           return;
@@ -173,13 +171,13 @@ Alpine
         notes[currentIndex + amount].focus();
       },
       shiftFocusOneRowAbove() {
-        let notes = document.activeElement.parentElement.children;
-        let amount = this.getNotesAmountInRow();
+        const notes = document.activeElement.parentElement.children;
+        const amount = this.getNotesAmountInRow();
 
         if (notes.length <= amount)
           return;
 
-        let currentIndex = Array.from(notes).indexOf(document.activeElement)
+        const currentIndex = Array.from(notes).indexOf(document.activeElement)
 
         if (currentIndex - amount < 0)
           return;
@@ -187,7 +185,7 @@ Alpine
         notes[currentIndex - amount].focus();
       },
       async shiftColor(sticker) {
-        let index = sticker.colorIndex;
+        const index = sticker.colorIndex;
 
         sticker.colorIndex += 1;
 
