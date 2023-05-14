@@ -7,8 +7,44 @@
   <link href="/stylesheets/style.css" rel="stylesheet" />
 </head>
 <body>
+  <input 
+      hidden 
+      type="file" 
+      id="upload" 
+      accept=".json"
+      @change="$store.app.handleUpload(event)"
+    >
   <div 
-      x-data="$store.app.loadStickers()"
+      id="instruction"
+      x-show="$store.app.stickers.some(it => it.content === '/help')"
+    >
+    <div class="instruction-line">
+      <span>Press tab while focusing on the last sticker to insert a new sticker after the last sticker.</span>
+    </div>
+    <div class="instruction-line">
+      <span>Press shift + tab while focusing on the first sticker to insert a new sticker before the first sticker.</span>
+    </div>
+    <div class="instruction-line">
+      <span>Press alt while focusing on the sticker to change it's color.</span>
+    </div>
+    <div class="instruction-line">
+      <span>Press delete on an empty sticker to remove it.</span>
+    </div>
+    <div class="instruction-line">
+      <span>Follow <a href="/ui/new">/ui/new</a> to create a new board.</span>
+    </div>
+    <div class="instruction-line">
+      <span>Follow <a href="/ui/delete/{{id}}">/ui/delete/{{id}}</a> to delete the board with id given in the url (current board).</span>
+    </div>
+    <div class="instruction-line">
+      <span>Type "/export" to export the stickie board.</span>
+    </div>
+    <div class="instruction-line">
+      <span>Type "/import" to import the stickie board.</span>
+    </div>
+  </div>
+  <div 
+      x-data="$store.app.loadStickers('{{id}}')"
       @keydown.tab.document="$store.app.addSticker();" 
       @keyup.delete.window="$store.app.removeSticker()"
       @keyup.up.prevent="$store.app.shiftFocusOneRowAbove()"
@@ -26,9 +62,11 @@
             :class="`${$store.app.colorMap[sticker.colorIndex]}`" 
             draggable="true" 
             @keyup.alt="$store.app.shiftColor(sticker)"
+            @keyup="$store.app.processCommand(sticker)"
             @keyup.debounce.1500ms="$store.app.saveStickers()"
             @dragover.prevent=""
             @drop="$store.app.swap()"
+            maxlength="380"
         ></textarea>
         </div>
       </template>

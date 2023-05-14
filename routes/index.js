@@ -1,7 +1,8 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
 const { randomUUID } = require('crypto');
 const StickieBoard = require('../models/stickieBoardSchema.js');
+
+const router = express.Router();
 
 router
   .get(
@@ -17,9 +18,7 @@ router
     }
   );
 
-router.get('/ui/view/:id', (request, response) => {
-  response.render('index');
-});
+router.get('/ui/view/:id', (request, response) => response.render('index', { id: request.params.id }));
 
 router
   .get(

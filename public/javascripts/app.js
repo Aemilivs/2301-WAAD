@@ -14,6 +14,11 @@ Alpine
         return Math.floor(boardWidth/noteWidth); 
       },
       addSticker() {
+        if (this.stickers.length >= 50) {
+          alert("Too many stickers! Sticker board is limited up to 50 stickers.");
+          return;
+        }
+
         const sticker = {
           content: '',
           colorIndex: 0
@@ -44,7 +49,18 @@ Alpine
         this.saveStickers();
       },
       removeSticker() {
-        this.stickers = this.stickers.filter(it =>it.content != '');
+        const element = document.activeElement;
+
+        if (element.classList.contains('note') === false)
+          return;
+
+        const notes = document.activeElement.parentElement.children;
+        const index = Array.from(notes).indexOf(document.activeElement) - 1;
+
+        if (this.stickers[index].content !== '')
+          return;
+
+        this.stickers = this.stickers.filter(it =>it !== this.stickers[index]);
         this.saveStickers();
       },
       focusElement() {
@@ -84,25 +100,8 @@ Alpine
               }
           );
       },
-      async loadStickers() {
-        const url = document.URL;
-
-        if (url.includes('new'))
-          document.cookie = 'key=; Max-Age=-99999999;';  
-          
-        if (url.includes('delete')) {
-          const id = url.split('/').pop();
-          document.cookie = 'key=; Max-Age=-99999999;';
-          await fetch(
-            `/boards/delete/${id}`,
-            {
-              method: 'DELETE',
-            }
-          );
-          this.stickers = Alpine.reactive([])
-        }
-
-        let response = await fetch('/boards/');
+      async loadStickers(id) {
+        let response = await fetch('/boards/' + id);
 
         if (response.status === 404)
         {
@@ -126,6 +125,38 @@ Alpine
         const payload = await response.json();
         this.id = payload._id;
         this.stickers = Alpine.reactive(payload.stickers);
+      },
+      processCommand(sticker) {
+        const input = sticker.content;
+
+        if (input.startsWith('/') === false)
+          return;
+        
+        if (input === '/export')
+        {
+          this.stickers = this.stickers.filter(it => it !== sticker)
+          var url = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.stickers));
+          var node = document.createElement('a');
+          node.setAttribute("href", url);
+          node.setAttribute("download", "stickers.json");
+          document.body.appendChild(node);
+          node.click();
+          node.remove();
+        }
+        
+        if (input === '/import')
+        {
+          sticker.content = '';
+          const upload = document.querySelector('#upload');
+          upload.click();
+         }
+      },
+      handleUpload(event) {
+        let file = event.target.files[0];
+        const reader = new FileReader();
+        reader.onloadend = event => this.stickers = JSON.parse(event.target.result);
+        
+        reader.readAsText(file);
       },
       shiftFocusOneRowBelow() {
         let notes = document.activeElement.parentElement.children;
