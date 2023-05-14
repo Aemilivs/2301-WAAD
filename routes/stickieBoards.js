@@ -39,6 +39,16 @@ router
   .post(
       '/',
       async (request, response) => {
+
+        if (!request.body.stickers || request.body.stickers.length === 0)
+        {
+            const note = {
+                content: '/help',
+                colorIndex: 3
+            };
+            request.body.stickers = [note]
+        }
+
         var board = new StickieBoard({
           stickers: request.body.stickers,
           key: randomUUID()

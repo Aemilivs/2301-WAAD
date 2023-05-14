@@ -9,7 +9,7 @@ const mongoose = require('mongoose');
 const hbs = require('hbs');
 
 mongoose
-  .connect('mongodb://localhost:27017/mydb', { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect('mongodb://db:27017/mydb', { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB Connected...'))
   .catch(err => console.log(err));
 

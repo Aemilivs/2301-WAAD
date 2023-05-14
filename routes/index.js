@@ -14,7 +14,7 @@ router
       if (board !== null)
         response.redirect(`/ui/view/${board._id}`);
       else
-      response.redirect(`/ui/new`);
+        response.redirect(`/ui/new`);
     }
   );
 
@@ -25,7 +25,12 @@ router
     '/ui/new', 
     async (request, response) => {
         var board = new StickieBoard({
-          stickers: request.body.stickers,
+          stickers: [
+            {
+              content: '/help',
+              colorIndex: 3
+            }
+          ],
           key: randomUUID()
         });
 
